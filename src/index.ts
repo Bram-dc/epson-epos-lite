@@ -1,9 +1,11 @@
 import Builder from './Builder'
-import Printer from './Printer'
+import HTTPSPrinter from './HTTPSPrinter'
+import USBPrinter from './USBPrinter'
 
 const ePOS = {
     Builder,
-    Printer,
+    HTTPSPrinter,
+    USBPrinter,
 }
 
 export default ePOS

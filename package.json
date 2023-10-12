@@ -1,6 +1,6 @@
 {
     "name": "epson-epos-lite",
-    "version": "1.1.1",
+    "version": "1.2.8",
     "description": "A small temporary tool to print text on Epson ePOS printers, full version WIP: epson-epos",
     "main": "./build/index.js",
     "scripts": {
@@ -9,11 +9,8 @@
     "author": "Bram-dc",
     "homepage": "https://github.com/Bram-dc/epson-epos-lite",
     "license": "ISC",
-    "dependencies": {
-        "@xmldom/xmldom": "^0.8.2",
-        "cross-fetch": "^3.1.5"
-    },
     "devDependencies": {
+        "@types/w3c-web-usb": "^1.0.6",
         "@typescript-eslint/eslint-plugin": "^5.10.2",
         "@typescript-eslint/parser": "^5.10.2",
         "eslint": "^8.8.0",

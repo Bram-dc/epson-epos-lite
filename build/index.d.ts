@@ -1,7 +1,9 @@
 import Builder from './Builder';
-import Printer from './Printer';
+import HTTPSPrinter from './HTTPSPrinter';
+import USBPrinter from './USBPrinter';
 declare const ePOS: {
     Builder: typeof Builder;
-    Printer: typeof Printer;
+    HTTPSPrinter: typeof HTTPSPrinter;
+    USBPrinter: typeof USBPrinter;
 };
 export default ePOS;

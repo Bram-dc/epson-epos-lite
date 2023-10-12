@@ -1,22 +1,16 @@
 import Builder from './Builder';
 import { responseCodeToText } from './functions/conversions';
-import fetch from 'cross-fetch';
-import { DOMParser } from '@xmldom/xmldom';
-export default class Printer {
+export default class HTTPSPrinter {
     address;
     constructor(ip, device_id = 'local_printer', timeout = 10000) {
         this.address = `https://${ip}/cgi-bin/epos/service.cgi?devid=${device_id}&timeout=${timeout}`;
     }
-    toSoap(content, printjobid) {
-        let soap = '';
-        soap += '<?xml version="1.0" encoding="utf-8"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
-        if (printjobid)
-            soap += '<s:Header><parameter xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print"><printjobid>' + printjobid + '</printjobid></parameter></s:Header>';
-        soap += '<s:Body>' + content + '</s:Body></s:Envelope>';
-        return soap;
+    toSoap(content) {
+        return `<?xml version="1.0" encoding="utf-8"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body>${content}</s:Body></s:Envelope>`;
     }
-    async sendRaw(content, printjob_id) {
-        const soap = this.toSoap(content, printjob_id);
+    async send(build) {
+        const content = build.toString();
+        const soap = this.toSoap(content);
         const controller = new AbortController();
         let timed_out = false;
         const timeout = setTimeout(() => {
@@ -70,12 +64,8 @@ export default class Printer {
             return { ok: false, message: 'Network error' };
         }
     }
-    async send(build, printjob_id) {
-        const content = build.toString();
-        return this.sendRaw(content, printjob_id);
-    }
     async ping() {
-        return this.sendRaw(new Builder().toString());
+        return this.send(new Builder());
     }
 }
-//# sourceMappingURL=Printer.js.map
+//# sourceMappingURL=HTTPSPrinter.js.map

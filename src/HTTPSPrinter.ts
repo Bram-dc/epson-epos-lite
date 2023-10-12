@@ -1,10 +1,8 @@
 import * as Epson from './functions/enums'
 import Builder from './Builder'
 import { responseCodeToText } from './functions/conversions'
-import fetch from 'cross-fetch'
-import { DOMParser } from '@xmldom/xmldom'
 
-export default class Printer {
+export default class HTTPSPrinter {
     private address: string
 
     constructor(ip: string, device_id = 'local_printer', timeout = 10000) {
@@ -13,24 +11,17 @@ export default class Printer {
 
     }
 
-    private toSoap(content: string, printjobid?: string) {
+    private toSoap(content: string) {
 
-        let soap = ''
-
-        soap += '<?xml version="1.0" encoding="utf-8"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">'
-
-        if (printjobid)
-            soap += '<s:Header><parameter xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print"><printjobid>' + printjobid + '</printjobid></parameter></s:Header>'
-
-        soap += '<s:Body>' + content + '</s:Body></s:Envelope>'
-
-        return soap
+        return `<?xml version="1.0" encoding="utf-8"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body>${content}</s:Body></s:Envelope>`
 
     }
 
-    async sendRaw(content: string, printjob_id?: string): Promise<{ ok: true } | { ok: false, message: string }> {
+    async send(build: Builder): Promise<{ ok: true } | { ok: false, message: string }> {
 
-        const soap = this.toSoap(content, printjob_id)
+        const content = build.toString()
+
+        const soap = this.toSoap(content)
 
         const controller = new AbortController()
 
@@ -109,17 +100,9 @@ export default class Printer {
 
     }
 
-    async send(build: Builder, printjob_id?: string) {
-
-        const content = build.toString()
-
-        return this.sendRaw(content, printjob_id)
-
-    }
-
     async ping() {
 
-        return this.sendRaw(new Builder().toString())
+        return this.send(new Builder())
 
     }
 

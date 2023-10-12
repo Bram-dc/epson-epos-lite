@@ -1,6 +1,7 @@
 import * as Epson from './functions/enums';
 export default class Builder {
     private message;
+    private commands;
     halftone: Epson.Halftone;
     brightness: number;
     force: boolean;
@@ -44,5 +45,7 @@ export default class Builder {
     addRecovery(): this;
     addReset(): this;
     addCommand(data: string): this;
+    addRaw(data: number[]): this;
     toString(): string;
+    toBuffer(): Uint8Array;
 }

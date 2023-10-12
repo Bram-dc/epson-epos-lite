@@ -1,20 +1,24 @@
 import * as Epson from './functions/enums'
 import { regexAlign, regexBarcode, regexColor, regexCut, regexDirection, regexDrawer, regexFeed, regexFont, regexHri, regexLayout, regexLevel, regexLine, regexMode, regexPattern, regexPulse, regexSymbol } from './constants/regex'
 import { escapeControl, escapeMarkup, getBoolAttr, getEnumAttr, getEnumIntAttr, getIntAttr, getShortAttr, getUByteAttr, getUShortAttr, toBase64Binary, toGrayImage, toHexBinary, toMonoImage } from './functions/misc'
+import { encodeCharacter as _, encodeString, ESC, GS, LF, uint3 } from './functions/codes'
 
 export default class Builder {
     private message = ''
+    private commands: number[] = []
     halftone = Epson.Halftone.DITHER
     brightness = 1
     force = false
 
     constructor() {
 
-        //
+        this.addReset()
 
     }
 
     addText(data: string) {
+
+        this.commands.push(...encodeString(data))
 
         this.message += '<text>' + escapeMarkup(data) + '</text>'
 
@@ -24,6 +28,9 @@ export default class Builder {
 
     addTextLang(lang: string) {
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<text lang="' + lang + '"/>'
 
         return this
@@ -31,6 +38,15 @@ export default class Builder {
     }
 
     addTextAlign(align: Epson.Align) {
+
+        let n
+        switch (align) {
+            case Epson.Align.LEFT: n = 0; break
+            case Epson.Align.CENTER: n = 1; break
+            case Epson.Align.RIGHT: n = 2; break
+        }
+
+        this.commands.push(ESC, _('a'), n)
 
         let s = ''
         s += getEnumAttr('align', align, regexAlign)
@@ -46,6 +62,9 @@ export default class Builder {
         let s = ''
         s += getBoolAttr('rotate', rotate)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<text' + s + '/>'
 
         return this
@@ -57,6 +76,9 @@ export default class Builder {
         let s = ''
         s += getUByteAttr('linespc', linespc)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<text' + s + '/>'
 
         return this
@@ -64,13 +86,22 @@ export default class Builder {
     }
 
     addTextFont(font: Epson.Font) {
+
         let s = ''
         s += getEnumAttr('font', font, regexFont)
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<text' + s + '/>'
+
         return this
+
     }
 
     addTextSmooth(smooth: boolean) {
+
+        this.commands.push(GS, _('b'), Number(smooth))
 
         let s = ''
         s += getBoolAttr('smooth', smooth)
@@ -90,6 +121,8 @@ export default class Builder {
         if (dh !== undefined)
             s += getBoolAttr('dh', dh)
 
+        throw new Error('Not implemented')
+        this.commands.push()
 
         this.message += '<text' + s + '/>'
 
@@ -97,7 +130,9 @@ export default class Builder {
 
     }
 
-    addTextSize(width?: number, height?: number) {
+    addTextSize(width = 1, height = 1) {
+
+        this.commands.push(GS, _('!'), (uint3(width - 1) << 4) + uint3(height - 1))
 
         let s = ''
         if (width !== undefined)
@@ -127,6 +162,9 @@ export default class Builder {
         if (color !== undefined)
             s += getEnumAttr('color', color, regexColor)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<text' + s + '/>'
 
         return this
@@ -134,6 +172,8 @@ export default class Builder {
     }
 
     addTextPosition(x: number) {
+
+        this.commands.push(ESC, _('\\'), x, 0)
 
         let s = ''
         s += getUShortAttr('x', x)
@@ -149,6 +189,9 @@ export default class Builder {
         let s = ''
         s += getUShortAttr('y', y)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<text' + s + '/>'
 
         return this
@@ -160,6 +203,9 @@ export default class Builder {
         let s = ''
         s += getUByteAttr('unit', unit)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<feed' + s + '/>'
 
         return this
@@ -167,6 +213,8 @@ export default class Builder {
     }
 
     addFeedLine(line: number) {
+
+        this.commands.push(ESC, _('d'), uint3(line))
 
         let s = ''
         s += getUByteAttr('line', line)
@@ -179,6 +227,8 @@ export default class Builder {
 
     addFeed() {
 
+        this.commands.push(LF)
+
         this.message += '<feed/>'
 
         return this
@@ -189,6 +239,9 @@ export default class Builder {
 
         let s = ''
         s += getEnumAttr('pos', pos, regexFeed)
+
+        throw new Error('Not implemented')
+        this.commands.push()
 
         this.message += '<feed' + s + '/>'
 
@@ -225,6 +278,9 @@ export default class Builder {
 
         const raster = (mode === Epson.Mode.GRAY16) ? toGrayImage(imgdata, br) : toMonoImage(imgdata, ht, br)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<image' + s + '>' + toBase64Binary(raster) + '</image>'
 
         return this
@@ -237,6 +293,9 @@ export default class Builder {
 
         s += getUByteAttr('key1', key1)
         s += getUByteAttr('key2', key2)
+
+        throw new Error('Not implemented')
+        this.commands.push()
 
         this.message += '<logo' + s + '/>'
 
@@ -262,6 +321,9 @@ export default class Builder {
         if (height !== undefined)
             s += getUByteAttr('height', height)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<barcode' + s + '>' + escapeControl(escapeMarkup(data)) + '</barcode>'
 
         return this
@@ -269,88 +331,156 @@ export default class Builder {
     }
 
     addSymbol(data: string, type: Epson.BarcodeSymbol, level?: Epson.SymbolLevel, width?: number, height?: number, size?: number) {
+
         let s = ''
+
         s += getEnumAttr('type', type, regexSymbol)
-        if (level !== undefined) {
+
+        if (level !== undefined)
             s += getEnumIntAttr('level', level, regexLevel, 0, 255)
-        }
-        if (width !== undefined) {
+
+        if (width !== undefined)
             s += getUByteAttr('width', width)
-        }
-        if (height !== undefined) {
+
+        if (height !== undefined)
             s += getUByteAttr('height', height)
-        }
-        if (size !== undefined) {
+
+        if (size !== undefined)
             s += getUShortAttr('size', size)
-        }
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<symbol' + s + '>' + escapeControl(escapeMarkup(data)) + '</symbol>'
+
         return this
+
     }
 
     addHLine(x1: number, x2: number, style?: Epson.Line) {
+
         let s = ''
+
         s += getUShortAttr('x1', x1)
+
         s += getUShortAttr('x2', x2)
-        if (style !== undefined) {
+
+        if (style !== undefined)
             s += getEnumAttr('style', style, regexLine)
-        }
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<hline' + s + '/>'
+
         return this
+
     }
 
     addVLineBegin(x: number, style?: Epson.Line) {
+
         let s = ''
+
         s += getUShortAttr('x', x)
-        if (style !== undefined) {
+
+        if (style !== undefined)
             s += getEnumAttr('style', style, regexLine)
-        }
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<vline-begin' + s + '/>'
+
         return this
+
     }
 
     addVLineEnd(x: number, style?: Epson.Line) {
+
         let s = ''
         s += getUShortAttr('x', x)
-        if (style !== undefined) {
+
+        if (style !== undefined)
             s += getEnumAttr('style', style, regexLine)
-        }
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<vline-end' + s + '/>'
+
         return this
+
     }
 
     addPageBegin() {
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<page>'
+
         return this
+
     }
 
     addPageEnd() {
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '</page>'
+
         return this
+
     }
 
     addPageArea(x: number, y: number, width: number, height: number) {
+
         let s = ''
+
         s += getUShortAttr('x', x)
         s += getUShortAttr('y', y)
         s += getUShortAttr('width', width)
         s += getUShortAttr('height', height)
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<area' + s + '/>'
+
         return this
+
     }
 
     addPageDirection(dir: Epson.PageDirection) {
+
         let s = ''
+
         s += getEnumAttr('dir', dir, regexDirection)
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<direction' + s + '/>'
+
         return this
+
     }
 
     addPagEpsonition(x: number, y: number) {
+
         let s = ''
+
         s += getUShortAttr('x', x)
         s += getUShortAttr('y', y)
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<position' + s + '/>'
+
         return this
+
     }
 
     addPageLine(x1: number, y1: number, x2: number, y2: number, style?: Epson.Line) {
@@ -364,6 +494,9 @@ export default class Builder {
 
         if (style !== undefined)
             s += getEnumAttr('style', style, regexLine)
+
+        throw new Error('Not implemented')
+        this.commands.push()
 
         this.message += '<line' + s + '/>'
 
@@ -383,6 +516,9 @@ export default class Builder {
         if (style !== undefined)
             s += getEnumAttr('style', style, regexLine)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<rectangle' + s + '/>'
 
         return this
@@ -390,6 +526,10 @@ export default class Builder {
     }
 
     addRotateBegin() {
+
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<rotate-begin/>'
 
         return this
@@ -398,13 +538,25 @@ export default class Builder {
 
     addRotateEnd() {
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<rotate-end/>'
 
         return this
 
     }
 
-    addCut(type?: Epson.Cut) {
+    addCut(type: Epson.Cut = Epson.Cut.NO_FEED) {
+
+        let n
+        switch (type) {
+            case Epson.Cut.NO_FEED: n = 1; break
+            case Epson.Cut.FEED: n = 66; break
+            case Epson.Cut.RESERVE: n = 104; break
+        }
+
+        this.commands.push(GS, _('V'), n)
 
         let s = ''
 
@@ -427,6 +579,9 @@ export default class Builder {
         if (time !== undefined)
             s += getEnumAttr('time', time, regexPulse)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<pulse' + s + '/>'
 
         return this
@@ -445,6 +600,9 @@ export default class Builder {
 
         if (cycle !== undefined)
             s += getUShortAttr('cycle', cycle)
+
+        throw new Error('Not implemented')
+        this.commands.push()
 
         this.message += '<sound' + s + '/>'
 
@@ -476,6 +634,9 @@ export default class Builder {
         if (offset_label !== undefined)
             s += getShortAttr('offset-label', offset_label)
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<layout' + s + '/>'
 
         return this
@@ -483,6 +644,9 @@ export default class Builder {
     }
 
     addRecovery() {
+
+        throw new Error('Not implemented')
+        this.commands.push()
 
         this.message += '<recovery/>'
 
@@ -492,6 +656,8 @@ export default class Builder {
 
     addReset() {
 
+        this.commands.push(ESC, _('@'))
+
         this.message += '<reset/>'
 
         return this
@@ -500,7 +666,20 @@ export default class Builder {
 
     addCommand(data: string) {
 
+        throw new Error('Not implemented')
+        this.commands.push()
+
         this.message += '<command>' + toHexBinary(data) + '</command>'
+
+        return this
+
+    }
+
+    addRaw(data: number[]) {
+
+        this.commands.push(...data)
+
+        this.message += ''
 
         return this
 
@@ -514,6 +693,12 @@ export default class Builder {
             s += getBoolAttr('force', true)
 
         return '<epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print"' + s + '>' + this.message + '</epos-print>'
+
+    }
+
+    toBuffer() {
+
+        return new Uint8Array(this.commands)
 
     }
 
