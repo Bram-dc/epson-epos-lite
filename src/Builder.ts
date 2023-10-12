@@ -1,9 +1,10 @@
+import * as Epson from './functions/enums'
 import { regexAlign, regexBarcode, regexColor, regexCut, regexDirection, regexDrawer, regexFeed, regexFont, regexHri, regexLayout, regexLevel, regexLine, regexMode, regexPattern, regexPulse, regexSymbol } from './constants/regex'
 import { escapeControl, escapeMarkup, getBoolAttr, getEnumAttr, getEnumIntAttr, getIntAttr, getShortAttr, getUByteAttr, getUShortAttr, toBase64Binary, toGrayImage, toHexBinary, toMonoImage } from './functions/misc'
 
 export default class Builder {
     private message = ''
-    halftone = Halftone.DITHER
+    halftone = Epson.Halftone.DITHER
     brightness = 1
     force = false
 
@@ -29,7 +30,7 @@ export default class Builder {
 
     }
 
-    addTextAlign(align: Align) {
+    addTextAlign(align: Epson.Align) {
 
         let s = ''
         s += getEnumAttr('align', align, regexAlign)
@@ -62,7 +63,7 @@ export default class Builder {
 
     }
 
-    addTextFont(font: Font) {
+    addTextFont(font: Epson.Font) {
         let s = ''
         s += getEnumAttr('font', font, regexFont)
         this.message += '<text' + s + '/>'
@@ -111,7 +112,7 @@ export default class Builder {
 
     }
 
-    addTextStyle(reverse?: boolean, ul?: boolean, em?: boolean, color?: Color) {
+    addTextStyle(reverse?: boolean, ul?: boolean, em?: boolean, color?: Epson.Color) {
 
         let s = ''
         if (reverse !== undefined)
@@ -184,7 +185,7 @@ export default class Builder {
 
     }
 
-    addFeedPosition(pos: Feed) {
+    addFeedPosition(pos: Epson.Feed) {
 
         let s = ''
         s += getEnumAttr('pos', pos, regexFeed)
@@ -195,7 +196,7 @@ export default class Builder {
 
     }
 
-    addImage(context: any, x: number, y: number, width: number, height: number, color?: Color, mode?: Mode) { // eslint-disable-line @typescript-eslint/no-explicit-any
+    addImage(context: any, x: number, y: number, width: number, height: number, color?: Epson.Color, mode?: Epson.Mode) { // eslint-disable-line @typescript-eslint/no-explicit-any
 
         let s = ''
 
@@ -222,7 +223,7 @@ export default class Builder {
 
         const imgdata = context.getImageData(x, y, width, height)
 
-        const raster = (mode === Mode.GRAY16) ? toGrayImage(imgdata, br) : toMonoImage(imgdata, ht, br)
+        const raster = (mode === Epson.Mode.GRAY16) ? toGrayImage(imgdata, br) : toMonoImage(imgdata, ht, br)
 
         this.message += '<image' + s + '>' + toBase64Binary(raster) + '</image>'
 
@@ -243,7 +244,7 @@ export default class Builder {
 
     }
 
-    addBarcode(data: string, type: BarcodeType, hri?: BarcodeHRI, font?: Font, width?: number, height?: number) {
+    addBarcode(data: string, type: Epson.BarcodeType, hri?: Epson.BarcodeHRI, font?: Epson.Font, width?: number, height?: number) {
 
         let s = ''
 
@@ -267,7 +268,7 @@ export default class Builder {
 
     }
 
-    addSymbol(data: string, type: BarcodeSymbol, level?: SymbolLevel, width?: number, height?: number, size?: number) {
+    addSymbol(data: string, type: Epson.BarcodeSymbol, level?: Epson.SymbolLevel, width?: number, height?: number, size?: number) {
         let s = ''
         s += getEnumAttr('type', type, regexSymbol)
         if (level !== undefined) {
@@ -286,7 +287,7 @@ export default class Builder {
         return this
     }
 
-    addHLine(x1: number, x2: number, style?: Line) {
+    addHLine(x1: number, x2: number, style?: Epson.Line) {
         let s = ''
         s += getUShortAttr('x1', x1)
         s += getUShortAttr('x2', x2)
@@ -297,7 +298,7 @@ export default class Builder {
         return this
     }
 
-    addVLineBegin(x: number, style?: Line) {
+    addVLineBegin(x: number, style?: Epson.Line) {
         let s = ''
         s += getUShortAttr('x', x)
         if (style !== undefined) {
@@ -307,7 +308,7 @@ export default class Builder {
         return this
     }
 
-    addVLineEnd(x: number, style?: Line) {
+    addVLineEnd(x: number, style?: Epson.Line) {
         let s = ''
         s += getUShortAttr('x', x)
         if (style !== undefined) {
@@ -337,14 +338,14 @@ export default class Builder {
         return this
     }
 
-    addPageDirection(dir: PageDirection) {
+    addPageDirection(dir: Epson.PageDirection) {
         let s = ''
         s += getEnumAttr('dir', dir, regexDirection)
         this.message += '<direction' + s + '/>'
         return this
     }
 
-    addPagePosition(x: number, y: number) {
+    addPagEpsonition(x: number, y: number) {
         let s = ''
         s += getUShortAttr('x', x)
         s += getUShortAttr('y', y)
@@ -352,7 +353,7 @@ export default class Builder {
         return this
     }
 
-    addPageLine(x1: number, y1: number, x2: number, y2: number, style?: Line) {
+    addPageLine(x1: number, y1: number, x2: number, y2: number, style?: Epson.Line) {
 
         let s = ''
 
@@ -370,7 +371,7 @@ export default class Builder {
 
     }
 
-    addPageRectangle(x1: number, y1: number, x2: number, y2: number, style?: Line) {
+    addPageRectangle(x1: number, y1: number, x2: number, y2: number, style?: Epson.Line) {
 
         let s = ''
 
@@ -403,7 +404,7 @@ export default class Builder {
 
     }
 
-    addCut(type?: Cut) {
+    addCut(type?: Epson.Cut) {
 
         let s = ''
 
@@ -416,7 +417,7 @@ export default class Builder {
 
     }
 
-    addPulse(drawer?: Drawer, time?: Pulse) {
+    addPulse(drawer?: Epson.Drawer, time?: Epson.Pulse) {
 
         let s = ''
 
@@ -432,7 +433,7 @@ export default class Builder {
 
     }
 
-    addSound(pattern?: SoundPattern, repeat?: number, cycle?: number) {
+    addSound(pattern?: Epson.SoundPattern, repeat?: number, cycle?: number) {
 
         let s = ''
 
@@ -451,7 +452,7 @@ export default class Builder {
 
     }
 
-    addLayout(type: PaperType, width?: number, height?: number, margin_top?: number, margin_bottom?: number, offset_cut?: number, offset_label?: number) {
+    addLayout(type: Epson.PaperType, width?: number, height?: number, margin_top?: number, margin_bottom?: number, offset_cut?: number, offset_label?: number) {
 
         let s = ''
 

@@ -6,6 +6,8 @@
             "dom",
             "esnext"
         ],
+        "sourceMap": true,
+        "declaration": true,
         "allowJs": true,
         "outDir": "build",
         "rootDir": "src",

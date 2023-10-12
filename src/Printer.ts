@@ -1,5 +1,8 @@
+import * as Epson from './functions/enums'
 import Builder from './Builder'
 import { responseCodeToText } from './functions/conversions'
+import fetch from 'cross-fetch'
+import { DOMParser } from '@xmldom/xmldom'
 
 export default class Printer {
     private address: string
@@ -10,7 +13,7 @@ export default class Printer {
 
     }
 
-    private toSoap(build: Builder, printjobid?: string) {
+    private toSoap(content: string, printjobid?: string) {
 
         let soap = ''
 
@@ -19,15 +22,15 @@ export default class Printer {
         if (printjobid)
             soap += '<s:Header><parameter xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print"><printjobid>' + printjobid + '</printjobid></parameter></s:Header>'
 
-        soap += '<s:Body>' + build.toString() + '</s:Body></s:Envelope>'
+        soap += '<s:Body>' + content + '</s:Body></s:Envelope>'
 
         return soap
 
     }
 
-    async send(build: Builder, printjob_id?: string): Promise<{ ok: true } | { ok: false, message: string }> {
+    async sendRaw(content: string, printjob_id?: string): Promise<{ ok: true } | { ok: false, message: string }> {
 
-        const soap = this.toSoap(build, printjob_id)
+        const soap = this.toSoap(content, printjob_id)
 
         const controller = new AbortController()
 
@@ -59,37 +62,36 @@ export default class Printer {
 
             } catch (e) {
 
-                return { ok: false, message: 'Failed to parse body content.' }
+                return { ok: false, message: 'Failed to parse body content' }
 
             }
 
             let collection: HTMLCollectionOf<Element>
             try {
 
-                collection = new window
-                    .DOMParser()
+                collection = new DOMParser()
                     .parseFromString(text, 'text/xml')
                     .getElementsByTagName('response')
 
                 if (!collection.length)
-                    throw new Error('No response element found.')
+                    throw new Error('No response element found')
 
             } catch (e) {
 
-                return { ok: false, message: 'Failed to read response.' }
+                return { ok: false, message: 'Failed to read response' }
 
             }
 
             const response = collection[0]
 
             const success = response.hasAttribute('status') ? /^(1|true)$/.test(response.getAttribute('success') ?? '') : null
-            const code = response.hasAttribute('code') ? response.getAttribute('code') as ResponseCode : null
+            const code = response.hasAttribute('code') ? response.getAttribute('code') as Epson.ResponseCode : null
 
             // const status = response.hasAttribute('status') ? parseInt(response.getAttribute('status') ?? '') : null
             // const battery = response.hasAttribute('battery') ? parseInt(response.getAttribute('battery') ?? '') : null
 
             if (success === null || code === null)
-                return { ok: false, message: 'Response data has invalid fields.' }
+                return { ok: false, message: 'Response data has invalid fields' }
 
             if (!success)
                 return { ok: false, message: responseCodeToText(code) }
@@ -99,17 +101,25 @@ export default class Printer {
         } catch (e) {
 
             if (timed_out)
-                return { ok: false, message: 'Network timeout.' }
+                return { ok: false, message: 'Network timeout' }
 
-            return { ok: false, message: 'Network error.' }
+            return { ok: false, message: 'Network error' }
 
         }
 
     }
 
+    async send(build: Builder, printjob_id?: string) {
+
+        const content = build.toString()
+
+        return this.sendRaw(content, printjob_id)
+
+    }
+
     async ping() {
 
-        return this.send(new Builder())
+        return this.sendRaw(new Builder().toString())
 
     }
 

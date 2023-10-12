@@ -1,4 +1,4 @@
-const enum Font {
+export const enum Font {
     A = 'font_a',
     B = 'font_b',
     C = 'font_c',
@@ -8,13 +8,13 @@ const enum Font {
     SPECIAL_B = 'special_b',
 }
 
-const enum Align {
+export const enum Align {
     LEFT = 'left',
     CENTER = 'center',
     RIGHT = 'right',
 }
 
-const enum Color {
+export const enum Color {
     NONE = 'none',
     ONE = 'color_1',
     TWO = 'color_2',
@@ -22,19 +22,19 @@ const enum Color {
     FOUR = 'color_4',
 }
 
-const enum Feed {
+export const enum Feed {
     PEELING = 'peeling',
     CUTTING = 'cutting',
     CURRENT_TOF = 'current_tof',
     NEXT_TOF = 'next_tof',
 }
 
-const enum Mode {
+export const enum Mode {
     MONO = 'mono',
     GRAY16 = 'gray16',
 }
 
-const enum BarcodeType {
+export const enum BarcodeType {
     UPC_A = 'upc_a',
     UPC_E = 'upc_e',
     EAN13 = 'ean13',
@@ -54,14 +54,14 @@ const enum BarcodeType {
     CODE128_AUTO = 'code128_auto',
 }
 
-const enum BarcodeHRI {
+export const enum BarcodeHRI {
     NONE = 'none',
     ABOVE = 'above',
     BELOW = 'below',
     BOTH = 'both',
 }
 
-const enum BarcodeSymbol {
+export const enum BarcodeSymbol {
     PDF417_STANDARD = 'pdf417_standard',
     PDF417_TRUNCATED = 'pdf417_truncated',
     QRCODE_MODEL_1 = 'qrcode_model_1',
@@ -83,7 +83,7 @@ const enum BarcodeSymbol {
     DATAMATRIX_RECTANGLE_16 = 'datamatrix_rectangle_16',
 }
 
-const enum SymbolLevel {
+export const enum SymbolLevel {
     LEVEL_0 = 'level_0',
     LEVEL_1 = 'level_1',
     LEVEL_2 = 'level_2',
@@ -100,7 +100,7 @@ const enum SymbolLevel {
     LEVEL_DEFAULT = 'default',
 }
 
-const enum Line {
+export const enum Line {
     THIN = 'thin',
     MEDIUM = 'medium',
     THICK = 'thick',
@@ -109,25 +109,25 @@ const enum Line {
     THICK_DOUBLE = 'thick_double',
 }
 
-const enum PageDirection {
+export const enum PageDirection {
     LEFT_TO_RIGHT = 'left_to_right',
     BOTTOM_TO_TOP = 'bottom_to_top',
     RIGHT_TO_LEFT = 'right_to_left',
     TOP_TO_BOTTOM = 'top_to_bottom',
 }
 
-const enum Cut {
+export const enum Cut {
     NO_FEED = 'no_feed',
     FEED = 'feed',
     RESERVE = 'reserve',
 }
 
-const enum Drawer {
+export const enum Drawer {
     DRAWER_1 = 'drawer_1',
     DRAWER_2 = 'drawer_2',
 }
 
-const enum Pulse {
+export const enum Pulse {
     PULSE_100 = 'pulse_100',
     PULSE_200 = 'pulse_200',
     PULSE_300 = 'pulse_300',
@@ -135,7 +135,7 @@ const enum Pulse {
     PULSE_500 = 'pulse_500',
 }
 
-const enum SoundPattern {
+export const enum SoundPattern {
     NONE = 'none',
     PATTERN_0 = 'pattern_0',
     PATTERN_1 = 'pattern_1',
@@ -157,15 +157,37 @@ const enum SoundPattern {
     PAPER_END = 'paper_end',
 }
 
-const enum PaperType {
+export const enum PaperType {
     RECEIPT = 'receipt',
     RECEIPT_BM = 'receipt_bm',
     LABEL = 'label',
     LABEL_BM = 'label_bm',
 }
 
-const enum Halftone {
+export const enum Halftone {
     DITHER = 0,
     ERROR_DIFFUSION = 1,
     THRESHOLD = 2,
+}
+
+export const enum ResponseCode {
+    EPTR_AUTOMATICAL = 'EPTR_AUTOMATICAL',
+    EPTR_BATTERY_LOW = 'EPTR_BATTERY_LOW',
+    EPTR_COVER_OPEN = 'EPTR_COVER_OPEN',
+    EPTR_CUTTER = 'EPTR_CUTTER',
+    EPTR_MECHANICAL = 'EPTR_MECHANICAL',
+    EPTR_REC_EMPTY = 'EPTR_REC_EMPTY',
+    EPTR_UNRECOVERABLE = 'EPTR_UNRECOVERABLE',
+    SchemaError = 'SchemaError',
+    DeviceNotFound = 'DeviceNotFound',
+    PrintSystemError = 'PrintSystemError',
+    EX_BADPORT = 'EX_BADPORT',
+    EX_TIMEOUT = 'EX_TIMEOUT',
+    EX_SPOOLER = 'EX_SPOOLER',
+    JobNotFound = 'JobNotFound',
+    Printing = 'Printing',
+    JobSpooling = 'JobSpooling',
+    TooManyRequests = 'TooManyRequests',
+    RequestEntityTooLarge = 'RequestEntityTooLarge',
+    ERROR_WAIT_EJECT = 'ERROR_WAIT_EJECT',
 }
